@@ -11,4 +11,7 @@ The idea is that you control a ball which bounces off a flat surface, and try no
 
 # Thanks to
 
-Thanks to [Fireship.io](https://www.youtube.com/watch?v=Q7AOvWpIVHU&t=213s) for an introductory video regarding 3.JS, which put me on track to start this project.
+- Thanks to [Fireship.io](https://www.youtube.com/watch?v=Q7AOvWpIVHU&t=213s) for an introductory video regarding 3.JS, which put me on track to start this project.
+- Shoutout to:
+  - <https://unsplash.com/photos/inUID_-1lCU?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink> for the marble texture
+  - <> for the sky background
