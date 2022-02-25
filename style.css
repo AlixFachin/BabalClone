@@ -1,11 +1,45 @@
-canvas {
+header {
+  background-color: lightblue;
+
+  width: 100vw;
+  height: 10vh;
+
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+header > .title {
+  font-size: x-large;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  flex-grow: 3;
+}
+
+header > #control_panel {
+  padding: 0.2em 2em;
+}
+
+header > audio {
+  position: absolute;
+  left: 0px;
 }
 
 main {
   position: absolute;
+  top: 10vh;
+  width: 100vw;
+}
+
+canvas {
+  position: fixed;
+  top: 10vh;
+  left: 0;
 }
 
 #score_panel {
@@ -13,9 +47,29 @@ main {
   top: 1em;
   left: 1em;
 
-  border: 1px solid red;
-  background-color: rgba(255, 255, 255, 0.6);
-
   width: 200px;
   height: 200px;
+}
+
+#calibration_panel {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+
+  padding: 1em 0.3em;
+
+  width: 300px;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.5em;
+}
+
+.valueInput {
+  size: 5;
+}
+
+.panel {
+  border: 1px solid red;
+  background-color: rgba(255, 255, 255, 0.6);
 }

@@ -8,14 +8,33 @@
     <title>Babal Clone!</title>
   </head>
   <body>
-    <div id="app"></div>
-    <canvas id="bg"></canvas>
-    <div id="score_panel">
-
-    </div>
-
+    <header>
+      <p class="title">BABAL</p>
+      <audio src="assets/Komiku_-_07_-_Run_against_the_universe.mp3" controls loop></audio>
+      <div id="control_panel"> <button id="reset_button">Reset</button> </div>
+    </header>
     <main>
-    
+      <canvas id="bg"></canvas>
+      <div id="score_panel" class="panel"></div>
+      <div id="calibration_panel" class="panel">
+        <label>Gravity</label>
+        <input type="text" class="valueInput" size="5" id="gravityInput" data-key="gravity">
+        <label>Jump Strength</label>
+        <input type="text" class="valueInput" size="5" id="jumpInput" data-key="jump">
+        <label>Bouncy Effect</label>
+        <input type="text" class="valueInput" size="5" id="bouncyInput" data-key="bounce">
+        <label>Air Resistance</label>
+        <input type="text" class="valueInput" size="5" id="airInput" data-key="air">
+      </div>
+      <div id="credits">
+        Epic Song by BoxCat Games | https://freemusicarchive.org/music/BoxCat_Games
+        Music promoted by https://www.chosic.com/free-music/all/
+        Creative Commons CC BY 3.0
+        https://creativecommons.org/licenses/by/3.0/
+
+        Music: https://www.chosic.com/free-music/all/ 
+
+      </div>
     </main>
     
     <script type="module" src="/src/main.js"></script>
