@@ -11,9 +11,11 @@ const config_forces = {
 // The final acceleration will be the result of the player strength and 
 
 const calc_air_resistance = (player_data) => {
-    const air_resistance_factor = 0.2;
-    
-    return player_data.speed.clone().negate().multiplyScalar(air_resistance_factor);
+    const air_resistance_factor = 0.9;
+    const air_resistance = player_data.speed.clone().negate().multiplyScalar(air_resistance_factor);
+    air_resistance.setY(0)
+
+    return air_resistance;
   }
   
   const calc_gravity = () => {

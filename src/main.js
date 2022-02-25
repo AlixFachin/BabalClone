@@ -46,7 +46,7 @@ const init_scene = () => {
   });
 
   scene_objects.renderer.setPixelRatio(window.devicePixelRatio);
-  scene_objects.renderer.setSize(window.innerWidth, window.innerHeight);
+  scene_objects.renderer.setSize(window.innerWidth, 0.9 * window.innerHeight);
 }
 
 const add_terrain_tiles = () => {
@@ -115,8 +115,10 @@ const updateCameraPosition = () => {
 const keydown_handler = keyEvent => {
   const pushStep_z = 40;
   const pushStep_x = 20;
-  const jump_strength = 400;
+  const jump_strength = 80;
   
+  keyEvent.preventDefault();
+
   player_data.push.set(0, 0, 0);
 
   if (keyEvent.code == 'ArrowUp') {
@@ -128,6 +130,7 @@ const keydown_handler = keyEvent => {
   } else if (keyEvent.code == 'ArrowRight') {
     player_data.push.setX(-pushStep_x);
   } else if (keyEvent.code == 'Space') {
+    console.log('Jump detected!')
     if (player_data.hasJumped) {
       // To avoid keeping accelerating on the way up (and make jump strength consistent), we only 
       // count the jump strength during one burst
@@ -140,7 +143,7 @@ const keydown_handler = keyEvent => {
   } else if (keyEvent.code == 'Escape') {
     player_data.shouldUpdate = false;
   }
-}
+}                                                                                                               
 
 const keyup_handler = keyEvent => {
   if (keyEvent.code == 'ArrowUp' || keyEvent.code == 'ArrowDown') {
@@ -154,8 +157,18 @@ const keyup_handler = keyEvent => {
   } 
 }
 
-document.addEventListener('keydown', keydown_handler);
-document.addEventListener('keyup', keyup_handler);
+const window_resize_handler = () => {
+  scene_objects.renderer.setSize(window.innerWidth, 0.9 * window.innerHeight);
+  scene_objects.cameras.playerCamera.aspect = window.innerWidth / ( 0.9 * window.innerHeight);
+  scene_objects.cameras.playerCamera.updateProjectionMatrix();
+}
+
+const initEventHandlers = () => {
+  document.addEventListener('keydown', keydown_handler);
+  document.addEventListener('keyup', keyup_handler);
+  window.addEventListener('resize', window_resize_handler);
+}
+
 
 // Function which returns whether the player is allowed to jump or not (similar to collision, the player is allowed
 // to jump only "near surfaces")
@@ -200,11 +213,12 @@ const display_player_stats = () => {
   const push_string = `Push: (${_2digits(player_data.push.x)},${_2digits(player_data.push.y)},${_2digits(player_data.push.z)})`;
   const rot_string = `Rotation: (${_2digits(player_data.rotation.x)},${_2digits(player_data.rotation.y)},${_2digits(player_data.rotation.z)})`
   panel.innerText = [ position_string, speed_string, push_string, rot_string].join('\n');
-}
+};
 
 // Init functions 
 init_scene();
 add_objects();
+initEventHandlers();
 //update_player_position();
 updateCameraPosition();
 
