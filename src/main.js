@@ -7,7 +7,9 @@
 
 import '../style.css'
 
-import {  world_keydown_handler, world_keyup_handler, getPlayerData, reset_player_data, init_world, start_mainLoop } from './world';
+import {  world_keydown_handler, world_keyup_handler, getPlayerData, reset_player_data, init_world, start_mainLoop, stop_mainLoop } from './world';
+
+import gameOverSound from '../assets/LiveLost.wav';
 
 // Keypressed Event and player position update
 
@@ -21,12 +23,22 @@ const keyup_handler = keyEvent => {
   world_keyup_handler(keyEvent);
 }
 
+const reset_game_click = () => {
+  stop_mainLoop();
+  reset_player_data();
+  start_mainLoop(display_player_stats);
+}
+
 const initEventHandlers = () => {
   document.addEventListener('keydown', keydown_handler);
   document.addEventListener('keyup', keyup_handler);
-  document.getElementById('reset_button').addEventListener('click', reset_player_data);
+  document.getElementById('reset_button').addEventListener('click', reset_game_click);
 }
 
+const game_over_event = () => {
+  const sfx = new Audio(gameOverSound);
+  sfx.play();
+}
 
 // Function which returns whether the player is allowed to jump or not (similar to collision, the player is allowed
 // to jump only "near surfaces")
@@ -40,8 +52,9 @@ const display_player_stats = () => {
   const position_string = `Position: (${_2digits(player_data.position.x)},${_2digits(player_data.position.y)},${_2digits(player_data.position.z)})`;
   const speed_string = `Speed: (${_2digits(player_data.speed.x)},${_2digits(player_data.speed.y)},${_2digits(player_data.speed.z)})`;
   const push_string = `Push: (${_2digits(player_data.push.x)},${_2digits(player_data.push.y)},${_2digits(player_data.push.z)})`;
-  const rot_string = `Rotation: (${_2digits(player_data.rotation.x)},${_2digits(player_data.rotation.y)},${_2digits(player_data.rotation.z)})`
-  panel.innerText = [ position_string, speed_string, push_string, rot_string].join('\n');
+  const rot_string = `Rotation: (${_2digits(player_data.rotation.x)},${_2digits(player_data.rotation.y)},${_2digits(player_data.rotation.z)})`;
+  const contact_string = player_data.contact ? 'CONTACT' : '';
+  panel.innerText = [ position_string, speed_string, push_string, rot_string, contact_string].join('\n');
 };
 
 

@@ -7,7 +7,7 @@
  * 
 */ 
 import { Vector3, Euler } from "three";
-import { allow_jump, get_terrain_tiles_list } from "./map";
+import { allow_jump, get_initial_player_position, get_terrain_tiles_list } from "./map";
 import { update_player_data } from "./physics";
 
 import * as THREE from 'three';
@@ -15,6 +15,7 @@ import * as THREE from 'three';
 // Importing assets
 import playerTextureURL from '../assets/marble-texture.jpg';
 import backgroundPicURL from '../assets/cloud_image.jpg';
+import { vector2String, vectorAbsFloor } from "./utils";
 
 // Behaviour Constants
 const pushStep_z = 40;
@@ -22,7 +23,7 @@ const pushStep_x = 20;
 const jump_strength = 80;
 
 const initial_player_data = {
-    position: new Vector3(0, 2, 0),
+    position: new Vector3(0, 0, 0),
     speed: new Vector3(0, 0, 0),
     push: new Vector3(0, 0, 0),
     rotation: new Euler(),
@@ -31,7 +32,7 @@ const initial_player_data = {
   }  
 
 const player_data = {
-    position: new Vector3(0, 2, 0),
+    position: new Vector3(0, 0, 0),
     speed: new Vector3(0, 0, 0),
     push: new Vector3(0, 0, 0),
     rotation: new Euler(),
@@ -54,7 +55,8 @@ const scene_objects = {
 const getPlayerData = () => player_data;
 
 const reset_player_data = () => {
-    player_data.position.copy(initial_player_data.position);
+    player_data.position.copy(get_initial_player_position());
+    player_data.position.setY(player_data.radius + 1); // +1 so that we have a cute bounce at the beginning
     player_data.speed.set(0, 0, 0);
     player_data.push.set(0, 0, 0);
     player_data.camera_y_offset = initial_player_data.camera_y_offset;
@@ -153,13 +155,12 @@ const update_player_position = () => {
     update_player_data(player_data);
     
     // Now we round the positions etc.
-    player_data.position.multiplyScalar(1 / rounding_precision);
-    player_data.position.floor();
-    player_data.position.multiplyScalar(rounding_precision);
-    player_data.speed.multiplyScalar(1 / rounding_precision);
-    player_data.speed.floor();
-    player_data.speed.multiplyScalar(rounding_precision);  
-  
+    vectorAbsFloor(player_data.position, rounding_precision);
+    vectorAbsFloor(player_data.speed, rounding_precision);
+    
+    if (player_data.position.y - player_data.radius <= 0.01 && player_data.speed.y < 0) {
+      console.log(`Going down - ${vector2String(player_data.position)} - ${vector2String(player_data.speed)}`);
+    }
   
     player_data.rotation.set(
         player_data.position.z / player_data.radius,
@@ -170,6 +171,15 @@ const update_player_position = () => {
     scene_objects.player.mesh.position.copy(player_data.position);
     scene_objects.player.mesh.rotation.copy(player_data.rotation);
 };
+
+const test_player_death = () => {
+  if (player_data.position.y < 0) {
+    console.log(`Player death! pos: ${vector2String(player_data.position)}, speed: ${vector2String(player_data.speed)}`);
+    return true;
+  }
+  return false;
+}
+
 
 const init_scene = () => {
   scene_objects.scene = new THREE.Scene(); // Scene = Container where we will put objects
@@ -197,7 +207,7 @@ const add_objects = () => {
   scene_objects.scene.add(scene_objects.cameras.playerCamera);
 
   // Adding the main player object
-  scene_objects.player.geometry = new THREE.SphereGeometry(getPlayerData().radius);
+  scene_objects.player.geometry = new THREE.SphereGeometry(player_data.radius);
   const imageTexture = new THREE.TextureLoader().load(playerTextureURL);
   scene_objects.player.material = new THREE.MeshBasicMaterial( { map: imageTexture});
   scene_objects.player.mesh = new THREE.Mesh(scene_objects.player.geometry, scene_objects.player.material);
@@ -205,9 +215,6 @@ const add_objects = () => {
 
   // Adding ambientlight
   scene_objects.lights.push(new THREE.AmbientLight(0xffffff));
-  const newPointLight = new THREE.PointLight(0xffffff);
-  newPointLight.position.set(5,5,5);
-  scene_objects.lights.push(newPointLight);
   for (const light of scene_objects.lights) {
     scene_objects.scene.add(light);
   }
@@ -223,6 +230,7 @@ const add_objects = () => {
 const init_world = () => {
   init_scene();
   add_objects();
+  reset_player_data();
 }
 
 const updateCameraPosition = () => {
@@ -247,6 +255,12 @@ const start_mainLoop = updateDisplayRoutine => {
     updateCameraPosition();
     if (updateDisplayRoutine instanceof Function) {
       updateDisplayRoutine();
+    }
+    
+    //document.getElementById('position_log').innerHTML += `<p>${vector2String(player_data.position)}</p><p>${vector2String(player_data.speed)}</p>`
+
+    if (test_player_death()) {
+      stop_mainLoop();
     }
 
     scene_objects.renderer.render(scene_objects.scene, scene_objects.cameras.playerCamera);
